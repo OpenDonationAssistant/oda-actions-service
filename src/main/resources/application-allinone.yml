@@ -1,0 +1,6 @@
+datasources:
+  default:
+    db-type: 'postgres'
+logger:
+  levels:
+    io.github.opendonationassistant: DEBUG

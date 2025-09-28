@@ -1,0 +1,14 @@
+micronaut:
+  application:
+    name: oda-actions-service
+  security:
+    token:
+      jwt:
+        signatures:
+          jwks:
+            keycloak:
+              url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
+flyway:
+  datasources:
+    default:
+      enabled: true
