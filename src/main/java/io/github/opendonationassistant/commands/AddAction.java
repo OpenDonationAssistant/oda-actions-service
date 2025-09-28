@@ -10,7 +10,10 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
+import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 
@@ -49,14 +52,17 @@ public class AddAction {
     );
   }
 
+  @Serdeable
   public static record AddActionsCommand(List<NewAction> actions) {}
 
+  @Serdeable
   public static record AddActionResult(
     Boolean success,
     String message,
     ActionDto action
   ) {}
 
+  @Serdeable
   public static record NewAction(
     String name,
     String category,
