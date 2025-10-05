@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
+import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -48,12 +49,14 @@ public class DeleteActions extends BaseController {
       .orElseGet(() -> HttpResponse.unauthorized());
   }
 
+  @Serdeable
   public static record DeleteActionsResult(
     Boolean success,
     String message,
     List<String> ids
   ) {}
 
+  @Serdeable
   public static record DeleteActionsCommand(
     @Nullable String category,
     @Nullable String provider,
