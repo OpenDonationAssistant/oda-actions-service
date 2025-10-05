@@ -1,0 +1,87 @@
+package io.github.opendonationassistant.commands;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import io.github.opendonationassistant.commands.AddAction.AddActionsCommand;
+import io.github.opendonationassistant.commands.AddAction.NewAction;
+import io.github.opendonationassistant.repository.Action;
+import io.github.opendonationassistant.repository.ActionData;
+import io.github.opendonationassistant.repository.ActionDataRepository;
+import io.github.opendonationassistant.repository.ActionRepository;
+import io.micronaut.core.util.StringUtils;
+import io.micronaut.security.authentication.Authentication;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import org.instancio.Instancio;
+import org.instancio.Model;
+import org.instancio.Select;
+import org.instancio.Selector;
+import org.instancio.TargetSelector;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+@ExtendWith(InstancioExtension.class)
+public class AddActionTest {
+
+  ActionRepository repository = mock(ActionRepository.class);
+  AddAction controller = new AddAction(repository);
+
+  Authentication auth = mock(Authentication.class);
+
+  @Test
+  public void testAddingAction(@Given NewAction newAction) {
+    var createdAction = mock(Action.class);
+    when(createdAction.save()).thenReturn(createdAction);
+    when(createdAction.data()).thenReturn(
+      new ActionData(
+        "id",
+        "recipient",
+        newAction.category(),
+        "providerName",
+        newAction.name(),
+        newAction.price(),
+        newAction.game(),
+        newAction.payload()
+      )
+    );
+    when(auth.getAttributes()).thenReturn(
+      Map.of("preferred_username", "recipient")
+    );
+
+    when(
+      repository.create(any(), any(), any(), any(), any(), any(), any())
+    ).thenReturn(createdAction);
+
+    var command = new AddActionsCommand(List.of(newAction));
+    var response = controller.addAction(command, auth);
+
+    verify(repository).create(
+      "recipient",
+      newAction.category(),
+      "providerName",
+      newAction.name(),
+      newAction.price(),
+      newAction.game(),
+      newAction.payload()
+    );
+
+    assertTrue(response.code() == 200);
+    var responseBody = response.getBody();
+    assertTrue(responseBody.isPresent());
+    var actionResults = responseBody.get();
+    assertEquals(1, actionResults.size());
+    assertTrue(actionResults.getFirst().success());
+    var action = actionResults.getFirst().action();
+    assertEquals(newAction.name(), action.name());
+    assertEquals(newAction.category(), action.category());
+    assertEquals(newAction.price(), action.price());
+    assertEquals(newAction.game(), action.game());
+    assertEquals(newAction.payload(), action.payload());
+    assertEquals("id", action.id());
+  }
+}

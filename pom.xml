@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.opendonationassistant</groupId>
   <artifactId>oda-actions-service</artifactId>
   <version>0.0.1</version>
   <packaging>${packaging}</packaging>
-
   <parent>
     <groupId>io.micronaut.platform</groupId>
     <artifactId>micronaut-parent</artifactId>
@@ -23,14 +21,12 @@
     <micronaut.aot.packageName>io.github.opendonationassistant.aot.generated</micronaut.aot.packageName>
     <exec.mainClass>io.github.opendonationassistant.Application</exec.mainClass>
   </properties>
-
   <repositories>
     <repository>
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
   </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.uuid</groupId>
@@ -137,6 +133,12 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.instancio</groupId>
+      <artifactId>instancio-junit</artifactId>
+      <version>5.0.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -144,13 +146,13 @@
         <groupId>io.micronaut.maven</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
         <configuration>
-              <aotDependencies>
-                  <dependency>
-                      <groupId>io.micronaut.security</groupId>
-                      <artifactId>micronaut-security-aot</artifactId>
-                      <version>${micronaut.security.version}</version>
-                  </dependency>
-              </aotDependencies>
+          <aotDependencies>
+            <dependency>
+              <groupId>io.micronaut.security</groupId>
+              <artifactId>micronaut-security-aot</artifactId>
+              <version>${micronaut.security.version}</version>
+            </dependency>
+          </aotDependencies>
           <configFile>aot-${packaging}.properties</configFile>
         </configuration>
       </plugin>
@@ -160,7 +162,6 @@
         <configuration>
           <!-- Uncomment to enable incremental compilation -->
           <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
-
           <annotationProcessorPaths combine.self="override">
             <path>
               <groupId>io.micronaut</groupId>
@@ -241,5 +242,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

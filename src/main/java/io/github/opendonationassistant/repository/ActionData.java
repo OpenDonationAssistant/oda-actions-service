@@ -6,15 +6,19 @@ import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 import io.micronaut.data.model.DataType;
 import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.Map;
 
 @Serdeable
-@MappedEntity("actions")
+@MappedEntity("action")
 public record ActionData(
   @Id String id,
-  String category,
-  String provider,
-  String name,
-  Amount amount,
-  @MappedProperty(type = DataType.JSON) Map<String, Object> payload
+  @Nonnull String recipientId,
+  @Nullable String category,
+  @Nonnull String provider,
+  @Nonnull String name,
+  @Nonnull Amount amount,
+  @Nullable String game,
+  @MappedProperty(type = DataType.JSON) @Nonnull Map<String, Object> payload
 ) {}

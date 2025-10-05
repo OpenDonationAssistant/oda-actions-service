@@ -13,4 +13,13 @@ public class Action {
   public ActionData data() {
     return data;
   }
+
+  public Action save() {
+    repository.save(data);
+    return this;
+  }
+
+  public void delete() {
+    repository.delete(data);
+  }
 }

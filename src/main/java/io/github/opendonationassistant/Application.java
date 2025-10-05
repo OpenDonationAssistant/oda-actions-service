@@ -24,4 +24,3 @@ public class Application {
     Micronaut.build(args).mainClass(Application.class).banner(false).start();
   }
 }
-
