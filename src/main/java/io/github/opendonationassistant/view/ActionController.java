@@ -26,7 +26,7 @@ public class ActionController extends BaseController {
     this.repository = repository;
   }
 
-  @Get
+  @Get("/actions")
   @Secured(SecurityRule.IS_AUTHENTICATED)
   public HttpResponse<List<ActionDto>> getActions(Authentication auth) {
     return getOwnerId(auth)
