@@ -36,7 +36,7 @@
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-rabbit-conf</artifactId>
-      <version>0.8.82</version>
+      <version>0.8.84</version>
     </dependency>
     <dependency>
       <groupId>io.micronaut</groupId>

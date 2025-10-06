@@ -3,6 +3,7 @@ package io.github.opendonationassistant.repository;
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.events.config.ConfigCommandSender;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.List;
@@ -13,25 +14,32 @@ import java.util.Optional;
 public class ActionRepository {
 
   private final ActionDataRepository repository;
+  private final ConfigCommandSender configCommandSender;
   private final ODALogger log = new ODALogger(this);
 
   @Inject
-  public ActionRepository(ActionDataRepository repository) {
+  public ActionRepository(
+    ActionDataRepository repository,
+    ConfigCommandSender configCommandSender
+  ) {
     this.repository = repository;
+    this.configCommandSender = configCommandSender;
   }
 
   public Optional<Action> findByIdAndRecipientId(
     String id,
     String recipientId
   ) {
-    return repository.findById(id).map(data -> new Action(data, repository));
+    return repository
+      .findById(id)
+      .map(data -> new Action(data, repository, configCommandSender));
   }
 
   public List<Action> list(String recipientId) {
     return repository
       .findByRecipientId(recipientId)
       .stream()
-      .map(data -> new Action(data, repository))
+      .map(data -> new Action(data, repository, configCommandSender))
       .toList();
   }
 
@@ -56,6 +64,6 @@ public class ActionRepository {
       payload
     );
     log.info("Saving action", Map.of("action", data));
-    return new Action(data, repository);
+    return new Action(data, repository, configCommandSender);
   }
 }
