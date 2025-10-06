@@ -3,6 +3,7 @@ package io.github.opendonationassistant.commands;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import io.github.opendonationassistant.events.config.ConfigCommandSender;
 import io.github.opendonationassistant.commands.DeleteActions.DeleteActionsCommand;
 import io.github.opendonationassistant.commands.DeleteActions.DeleteActionsResult;
 import io.github.opendonationassistant.repository.ActionData;
@@ -22,7 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public class DeleteActionsTest {
 
   ActionDataRepository dataRepository = mock(ActionDataRepository.class);
-  ActionRepository repository = new ActionRepository(dataRepository);
+  ConfigCommandSender commandSender = mock(ConfigCommandSender.class);
+  ActionRepository repository = new ActionRepository(dataRepository, commandSender);
   DeleteActions controller = new DeleteActions(repository);
   Authentication auth = mock(Authentication.class);
 
