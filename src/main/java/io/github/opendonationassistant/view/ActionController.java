@@ -8,10 +8,12 @@ import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
@@ -27,19 +29,24 @@ public class ActionController extends BaseController {
   }
 
   @Get("/actions")
-  @Secured(SecurityRule.IS_AUTHENTICATED)
-  public HttpResponse<List<ActionDto>> getActions(Authentication auth) {
-    return getOwnerId(auth)
-      .map(ownerId ->
-        repository
-          .list(ownerId)
-          .stream()
-          .map(Action::data)
-          .map(ActionDto::from)
-          .toList()
-      )
-      .map(HttpResponse::ok)
-      .orElseGet(() -> HttpResponse.unauthorized());
+  @Secured(SecurityRule.IS_ANONYMOUS)
+  public HttpResponse<List<ActionDto>> getActions(
+    @Nonnull @QueryValue(
+      value = "recipientId",
+      defaultValue = ""
+    ) String recipientId
+  ) {
+    if (recipientId.isEmpty()) {
+      return HttpResponse.unauthorized();
+    }
+    return HttpResponse.ok(
+      repository
+        .list(recipientId)
+        .stream()
+        .map(Action::data)
+        .map(ActionDto::from)
+        .toList()
+    );
   }
 
   @Serdeable
