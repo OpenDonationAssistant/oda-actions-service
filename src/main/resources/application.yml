@@ -8,6 +8,10 @@ micronaut:
           jwks:
             keycloak:
               url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
+  executors:
+    publishers:
+      type: fixed
+      nThreads: 2
 flyway:
   datasources:
     default:
