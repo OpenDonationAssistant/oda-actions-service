@@ -15,8 +15,10 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Controller
 public class AddAction extends BaseController {
@@ -31,35 +33,46 @@ public class AddAction extends BaseController {
 
   @Post("/actions/commands/addActions")
   @Secured(SecurityRule.IS_AUTHENTICATED)
-  public HttpResponse<List<AddActionResult>> addAction(
+  public CompletableFuture<HttpResponse<List<AddActionResult>>> addAction(
     @Body AddActionsCommand command,
     Authentication auth
   ) {
     log.debug("Received AddActionsCommand", Map.of("command", command));
-    return getOwnerId(auth)
-      .map(ownerId ->
-        command
-          .actions()
-          .stream()
-          .map(action ->
-            repository.create(
-              ownerId,
-              action.category(),
-              "providerName",
-              action.name(),
-              action.price(),
-              action.game(),
-              action.payload()
-            )
-          )
-          .map(Action::save)
-          .map(Action::data)
-          .map(ActionDto::from)
-          .map(dto -> new AddActionResult(true, "", dto))
-          .toList()
+    var recipientId = getOwnerId(auth);
+    if (recipientId.isEmpty()) {
+      return CompletableFuture.completedFuture(HttpResponse.unauthorized());
+    }
+    return command
+      .actions()
+      .stream()
+      .map(action ->
+        repository.create(
+          recipientId.get(),
+          action.category(),
+          "providerName",
+          action.name(),
+          action.price(),
+          action.game(),
+          action.payload()
+        )
       )
-      .map(HttpResponse::ok)
-      .orElseGet(() -> HttpResponse.unauthorized());
+      .map(action ->
+        action
+          .save()
+          .thenApply(it ->
+            List.of(new AddActionResult(true, "", ActionDto.from(it.data())))
+          )
+      )
+      .reduce(
+        CompletableFuture.completedFuture(new ArrayList<AddActionResult>()),
+        (f1, f2) -> {
+          return f1.thenCombine(f2, (l1, l2) -> {
+            l1.addAll(l2);
+            return l1;
+          });
+        }
+      )
+      .thenApply(results -> HttpResponse.ok(results));
   }
 
   @Serdeable
@@ -73,11 +86,19 @@ public class AddAction extends BaseController {
   ) {}
 
   @Serdeable
+  public static record ActionParameter(
+    String name,
+    String displayName,
+    String type
+  ) {}
+
+  @Serdeable
   public static record NewAction(
     String name,
     String category,
     String game,
     Amount price,
-    Map<String, Object> payload
+    Map<String, Object> payload,
+    List<ActionParameter> parameters
   ) {}
 }

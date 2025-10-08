@@ -7,19 +7,13 @@ import io.github.opendonationassistant.commands.AddAction.AddActionsCommand;
 import io.github.opendonationassistant.commands.AddAction.NewAction;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionData;
-import io.github.opendonationassistant.repository.ActionDataRepository;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Map;
-import org.instancio.Instancio;
-import org.instancio.Model;
-import org.instancio.Select;
-import org.instancio.Selector;
-import org.instancio.TargetSelector;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
@@ -34,9 +28,9 @@ public class AddActionTest {
   Authentication auth = mock(Authentication.class);
 
   @Test
-  public void testAddingAction(@Given NewAction newAction) {
+  public void testAddingAction(@Given NewAction newAction) throws InterruptedException, ExecutionException {
     var createdAction = mock(Action.class);
-    when(createdAction.save()).thenReturn(createdAction);
+    when(createdAction.save()).thenReturn(CompletableFuture.completedFuture(createdAction));
     when(createdAction.data()).thenReturn(
       new ActionData(
         "id",
@@ -58,7 +52,7 @@ public class AddActionTest {
     ).thenReturn(createdAction);
 
     var command = new AddActionsCommand(List.of(newAction));
-    var response = controller.addAction(command, auth);
+    var response = controller.addAction(command, auth).get();
 
     verify(repository).create(
       "recipient",

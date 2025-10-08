@@ -25,7 +25,9 @@ public class ActionControllerTest {
   @Test
   public void testGettingActionList(@Given Action first, @Given Action second) {
     when(repository.list("recipient")).thenReturn(List.of(first, second));
-    final HttpResponse<List<ActionDto>> response = controller.getActions("recipient");
+    final HttpResponse<List<ActionDto>> response = controller.getActions(
+      "recipient"
+    );
     assertTrue(response.code() == 200);
     assertEquals(2, response.body().size());
     var createdFirst = response.body().getFirst();

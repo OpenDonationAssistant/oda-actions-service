@@ -7,6 +7,8 @@ import io.github.opendonationassistant.commons.Amount;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +46,7 @@ public class ActionRepositoryTest {
   }
 
   @Test
-  public void testListingByRecipientId() {
+  public void testListingByRecipientId() throws InterruptedException, ExecutionException {
     var id1 = repository
       .create(
         "recipient",
@@ -56,6 +58,7 @@ public class ActionRepositoryTest {
         Map.of("key", "value")
       )
       .save()
+      .get()
       .data()
       .id();
     var id2 = repository
@@ -69,6 +72,7 @@ public class ActionRepositoryTest {
         Map.of("anotherKey", "anotherValue")
       )
       .save()
+      .get()
       .data()
       .id();
     var actions = repository.list("recipient");

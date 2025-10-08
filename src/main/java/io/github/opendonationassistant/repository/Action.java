@@ -2,6 +2,7 @@ package io.github.opendonationassistant.repository;
 
 import io.github.opendonationassistant.events.config.ConfigCommand;
 import io.github.opendonationassistant.events.config.ConfigCommandSender;
+import java.util.concurrent.CompletableFuture;
 
 public class Action {
 
@@ -23,30 +24,31 @@ public class Action {
     return data;
   }
 
-  public Action save() {
+  public CompletableFuture<Action> save() {
     repository.save(data);
     try {
-      configCommandSender.send(
-        new ConfigCommand.UpsertAction(
-          data.recipientId(),
-          data.id(),
-          data.name(),
-          data.amount(),
-          data.category(),
-          data.game(),
-          data.payload()
+      return configCommandSender
+        .send(
+          new ConfigCommand.UpsertAction(
+            data.recipientId(),
+            data.id(),
+            data.name(),
+            data.amount(),
+            data.category(),
+            data.game(),
+            data.payload()
+          )
         )
-      );
+        .thenApply(d -> this);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    return this;
   }
 
-  public void delete() {
+  public CompletableFuture<Void> delete() {
     repository.delete(data);
     try {
-      configCommandSender.send(
+      return configCommandSender.send(
         new ConfigCommand.DeleteAction(data.recipientId(), data.id())
       );
     } catch (Exception e) {
