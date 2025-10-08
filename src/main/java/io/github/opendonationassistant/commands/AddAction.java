@@ -59,9 +59,11 @@ public class AddAction extends BaseController {
       .map(action ->
         action
           .save()
-          .thenApply(it ->
-            List.of(new AddActionResult(true, "", ActionDto.from(it.data())))
-          )
+          .thenApply(it -> {
+            var list = new ArrayList<AddActionResult>();
+            list.add(new AddActionResult(true, "", ActionDto.from(it.data())));
+            return list;
+          })
       )
       .reduce(
         CompletableFuture.completedFuture(new ArrayList<AddActionResult>()),
