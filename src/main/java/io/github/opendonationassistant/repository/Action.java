@@ -26,33 +26,25 @@ public class Action {
 
   public CompletableFuture<Action> save() {
     repository.save(data);
-    try {
-      return configCommandSender
-        .send(
-          new ConfigCommand.UpsertAction(
-            data.recipientId(),
-            data.id(),
-            data.name(),
-            data.amount(),
-            data.category(),
-            data.game(),
-            data.payload()
-          )
+    return configCommandSender
+      .send(
+        new ConfigCommand.UpsertAction(
+          data.recipientId(),
+          data.id(),
+          data.name(),
+          data.amount(),
+          data.category(),
+          data.game(),
+          data.payload()
         )
-        .thenApply(d -> this);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+      )
+      .thenApply(d -> this);
   }
 
   public CompletableFuture<Void> delete() {
     repository.delete(data);
-    try {
-      return configCommandSender.send(
-        new ConfigCommand.DeleteAction(data.recipientId(), data.id())
-      );
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    return configCommandSender.send(
+      new ConfigCommand.DeleteAction(data.recipientId(), data.id())
+    );
   }
 }
