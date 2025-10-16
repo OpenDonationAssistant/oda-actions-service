@@ -34,7 +34,7 @@ public class PaymentListener {
         .stream()
         .map(action ->
           repository
-            .findByIdAndRecipientId(payment.id(), payment.recipientId())
+            .findByIdAndRecipientId(action.actionId(), payment.recipientId())
             .map(found ->
               new ActionSender.ActionRequest(
                 action.id(),
