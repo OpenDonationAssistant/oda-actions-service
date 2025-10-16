@@ -2,7 +2,7 @@ package io.github.opendonationassistant.listeners;
 
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.actions.ActionSender;
-import io.github.opendonationassistant.events.payments.PaymentFacade;
+import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
@@ -11,10 +11,15 @@ import jakarta.inject.Inject;
 public class PaymentListener {
 
   private final ActionSender actionSender;
+  private final ActionRepository repository;
 
   @Inject
-  public PaymentListener(ActionSender actionSender) {
+  public PaymentListener(
+    ActionSender actionSender,
+    ActionRepository repository
+  ) {
     this.actionSender = actionSender;
+    this.repository = repository;
   }
 
   @Queue(io.github.opendonationassistant.rabbit.Queue.Payments.ACTIONS)
@@ -28,12 +33,17 @@ public class PaymentListener {
         .actions()
         .stream()
         .map(action ->
-          new ActionSender.ActionRequest(
-            action.id(),
-            action.actionId(),
-            "",
-            action.payload()
-          )
+          repository
+            .findByIdAndRecipientId(payment.id(), payment.recipientId())
+            .map(found ->
+              new ActionSender.ActionRequest(
+                action.id(),
+                action.actionId(),
+                "",
+                found.data().payload()
+              )
+            )
+            .orElseThrow(() -> new RuntimeException("Action not found"))
         )
         .toList()
     );
