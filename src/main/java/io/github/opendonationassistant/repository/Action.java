@@ -36,11 +36,13 @@ public class Action {
 
   public CompletableFuture<Void> enable() {
     this.data = data.withEnabled(true);
+    repository.update(data);
     return updateConfig();
   }
 
   public CompletableFuture<Void> disable() {
     this.data = data.withEnabled(false);
+    repository.update(data);
     return deleteConfig();
   }
 
