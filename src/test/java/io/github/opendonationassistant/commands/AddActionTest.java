@@ -40,6 +40,7 @@ public class AddActionTest {
         newAction.name(),
         newAction.price(),
         newAction.game(),
+        true,
         newAction.payload()
       )
     );

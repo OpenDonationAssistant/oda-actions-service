@@ -61,6 +61,7 @@ public class ActionRepository {
       name,
       amount,
       game,
+      true,
       payload
     );
     log.info("Saving action", Map.of("action", data));

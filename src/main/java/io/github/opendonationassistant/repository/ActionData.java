@@ -20,5 +20,20 @@ public record ActionData(
   @Nonnull String name,
   @Nonnull Amount amount,
   @Nullable String game,
+  Boolean enabled,
   @MappedProperty(type = DataType.JSON) @Nonnull Map<String, Object> payload
-) {}
+) {
+  public ActionData withEnabled(Boolean enabled) {
+    return new ActionData(
+      id,
+      recipientId,
+      category,
+      provider,
+      name,
+      amount,
+      game,
+      enabled,
+      payload
+    );
+  }
+}

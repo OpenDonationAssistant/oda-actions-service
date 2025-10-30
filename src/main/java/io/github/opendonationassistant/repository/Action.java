@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Action {
 
-  private final ActionData data;
+  private ActionData data;
   private final ActionDataRepository repository;
   private final ConfigCommandSender configCommandSender;
 
@@ -26,25 +26,41 @@ public class Action {
 
   public CompletableFuture<Action> save() {
     repository.save(data);
-    return configCommandSender
-      .send(
-        new ConfigCommand.UpsertAction(
-          data.recipientId(),
-          data.id(),
-          data.name(),
-          data.amount(),
-          data.category(),
-          data.game(),
-          data.payload()
-        )
-      )
-      .thenApply(d -> this);
+    return updateConfig().thenApply(v -> this);
   }
 
   public CompletableFuture<Void> delete() {
     repository.delete(data);
+    return deleteConfig();
+  }
+
+  public CompletableFuture<Void> enable() {
+    this.data = data.withEnabled(true);
+    return updateConfig();
+  }
+
+  public CompletableFuture<Void> disable() {
+    this.data = data.withEnabled(false);
+    return deleteConfig();
+  }
+
+  private CompletableFuture<Void> deleteConfig() {
     return configCommandSender.send(
       new ConfigCommand.DeleteAction(data.recipientId(), data.id())
+    );
+  }
+
+  private CompletableFuture<Void> updateConfig() {
+    return configCommandSender.send(
+      new ConfigCommand.UpsertAction(
+        data.recipientId(),
+        data.id(),
+        data.name(),
+        data.amount(),
+        data.category(),
+        data.game(),
+        data.payload()
+      )
     );
   }
 }
