@@ -56,6 +56,7 @@ public class ActionController extends BaseController {
     Amount price,
     String category,
     String game,
+    Boolean enabled,
     Map<String, Object> payload
   ) {
     public static ActionDto from(ActionData data) {
@@ -65,6 +66,7 @@ public class ActionController extends BaseController {
         data.amount(),
         data.category(),
         data.game(),
+        data.enabled(),
         data.payload()
       );
     }
