@@ -49,7 +49,7 @@ public class ActionController extends BaseController {
       repository
         .findAll((root, builder) -> {
           return builder.and(
-            builder.equal(root.get("recipient_id"), recipientId),
+            builder.equal(root.get("recipientId"), recipientId),
             game != null ? builder.equal(root.get("game"), game) : null,
             enabled != null
               ? builder.equal(root.get("enabled"), enabled)
