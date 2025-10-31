@@ -17,6 +17,8 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,18 +50,22 @@ public class ActionController extends BaseController {
     return HttpResponse.ok(
       repository
         .findAll((root, builder) -> {
+          final ArrayList<Predicate> conditions = new ArrayList<>();
+          conditions.add(builder.equal(root.get("recipientId"), recipientId));
+          if (game != null) {
+            conditions.add(builder.equal(root.get("game"), game));
+          }
+          if (enabled != null) {
+            conditions.add(builder.equal(root.get("enabled"), enabled));
+          }
+          if (category != null) {
+            conditions.add(builder.equal(root.get("category"), category));
+          }
+          if (provider != null) {
+            conditions.add(builder.equal(root.get("provider"), provider));
+          }
           return builder.and(
-            builder.equal(root.get("recipientId"), recipientId),
-            game != null ? builder.equal(root.get("game"), game) : null,
-            enabled != null
-              ? builder.equal(root.get("enabled"), enabled)
-              : null,
-            category != null
-              ? builder.equal(root.get("category"), category)
-              : null,
-            provider != null
-              ? builder.equal(root.get("provider"), provider)
-              : null
+            conditions.toArray(new Predicate[conditions.size()])
           );
         })
         .stream()
