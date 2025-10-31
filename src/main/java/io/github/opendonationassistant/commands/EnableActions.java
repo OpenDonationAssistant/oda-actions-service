@@ -55,15 +55,17 @@ public class EnableActions extends BaseController {
     EnableActionsCommand command
   ) {
     final List<Action> actions = new ArrayList<>();
-    actions.addAll(
-      command
-        .ids()
-        .stream()
-        .flatMap(id -> {
-          return repository.findByIdAndRecipientId(id, ownerId).stream();
-        })
-        .toList()
-    );
+    if (command.ids() != null) {
+      actions.addAll(
+        command
+          .ids()
+          .stream()
+          .flatMap(id -> {
+            return repository.findByIdAndRecipientId(id, ownerId).stream();
+          })
+          .toList()
+      );
+    }
     PredicateSpecification<ActionData> spec = (root, builder) -> {
       final ArrayList<Predicate> conditions = new ArrayList<>();
       if (command.game() != null) {
