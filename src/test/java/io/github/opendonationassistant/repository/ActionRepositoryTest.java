@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.github.opendonationassistant.commons.Amount;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +48,8 @@ public class ActionRepositoryTest {
   }
 
   @Test
-  public void testListingByRecipientId() throws InterruptedException, ExecutionException {
+  public void testListingByRecipientId()
+    throws InterruptedException, ExecutionException {
     var id1 = repository
       .create(
         "recipient",
@@ -96,5 +99,39 @@ public class ActionRepositoryTest {
       actions.get(1).data().payload()
     );
     assertEquals(new Amount(100, 0, "EUR"), actions.get(1).data().amount());
+  }
+
+  @Test
+  public void testSearchingWithCriterias()
+    throws InterruptedException, ExecutionException {
+    var id1 = repository
+      .create(
+        "recipient",
+        "category",
+        "provider",
+        "name",
+        new Amount(10, 0, "EUR"),
+        "game",
+        Map.of("key", "value")
+      )
+      .save()
+      .get();
+    final List<Action> actions = repository.findAll((root, builder) -> {
+      return builder.and(
+        builder.equal(root.get("recipient_id"), "recipient"),
+        null,
+        null,
+        null
+      );
+    });
+    assertEquals(1, actions.size());
+    repository.findAll((root, builder) -> {
+      return builder.and(
+        builder.equal(root.get("recipient_id"), "recipient"),
+        builder.equal(root.get("game"), "game"),
+        builder.equal(root.get("category"), "category"),
+        builder.equal(root.get("enabled"), true)
+      );
+    });
   }
 }

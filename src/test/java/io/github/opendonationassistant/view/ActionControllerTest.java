@@ -9,7 +9,6 @@ import io.github.opendonationassistant.view.ActionController.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.Authentication;
 import java.util.List;
-import java.util.Map;
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,11 @@ public class ActionControllerTest {
   public void testGettingActionList(@Given Action first, @Given Action second) {
     when(repository.list("recipient")).thenReturn(List.of(first, second));
     final HttpResponse<List<ActionDto>> response = controller.getActions(
-      "recipient"
+      "recipient",
+      null,
+      null,
+      null,
+      null
     );
     assertTrue(response.code() == 200);
     assertEquals(2, response.body().size());
