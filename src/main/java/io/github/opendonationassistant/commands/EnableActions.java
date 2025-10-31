@@ -2,7 +2,9 @@ package io.github.opendonationassistant.commands;
 
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
+import io.github.opendonationassistant.repository.ActionData;
 import io.github.opendonationassistant.repository.ActionRepository;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -13,6 +15,8 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,15 +38,9 @@ public class EnableActions extends BaseController {
   ) {
     return getOwnerId(auth)
       .map(ownerId ->
-        command
-          .ids()
+        getActions(ownerId, command)
           .stream()
-          .map(id -> {
-            return repository
-              .findByIdAndRecipientId(id, ownerId)
-              .map(Action::enable)
-              .orElseGet(() -> CompletableFuture.completedFuture(null));
-          })
+          .map(Action::enable)
           .reduce(CompletableFuture.completedFuture(null), (f1, f2) ->
             f1.thenCombine(f2, (a, b) -> null)
           )
@@ -50,6 +48,39 @@ public class EnableActions extends BaseController {
       .map(unused -> new EnableActionsResult(true, "", command.ids())) // TODO collect ids
       .map(HttpResponse::ok)
       .orElseGet(() -> HttpResponse.unauthorized());
+  }
+
+  private List<Action> getActions(
+    String ownerId,
+    EnableActionsCommand command
+  ) {
+    final List<Action> actions = new ArrayList<>();
+    actions.addAll(
+      command
+        .ids()
+        .stream()
+        .flatMap(id -> {
+          return repository.findByIdAndRecipientId(id, ownerId).stream();
+        })
+        .toList()
+    );
+    PredicateSpecification<ActionData> spec = (root, builder) -> {
+      final ArrayList<Predicate> conditions = new ArrayList<>();
+      if (command.game() != null) {
+        conditions.add(builder.equal(root.get("game"), command.game()));
+      }
+      if (command.category() != null) {
+        conditions.add(builder.equal(root.get("category"), command.category()));
+      }
+      if (command.provider() != null) {
+        conditions.add(builder.equal(root.get("provider"), command.provider()));
+      }
+      return conditions.size() == 0
+        ? builder.isTrue(builder.literal(true))
+        : builder.and(conditions.toArray(new Predicate[conditions.size()]));
+    };
+    actions.addAll(repository.findAll(spec));
+    return actions;
   }
 
   @Serdeable
