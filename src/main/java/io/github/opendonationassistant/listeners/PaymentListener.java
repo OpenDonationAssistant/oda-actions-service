@@ -39,6 +39,7 @@ public class PaymentListener {
               new ActionSender.ActionRequest(
                 action.id(),
                 action.actionId(),
+                action.amount(),
                 "",
                 payment.nickname(),
                 found.data().payload()
