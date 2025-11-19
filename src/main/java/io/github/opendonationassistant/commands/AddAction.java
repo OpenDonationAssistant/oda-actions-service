@@ -3,7 +3,6 @@ package io.github.opendonationassistant.commands;
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
-import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.github.opendonationassistant.view.ActionController.ActionDto;
 import io.micronaut.http.HttpResponse;
@@ -49,7 +48,7 @@ public class AddAction extends BaseController {
         repository.create(
           recipientId.get(),
           action.category(),
-          "providerName",
+          "DonationListener",
           action.name(),
           action.price(),
           action.game(),

@@ -75,6 +75,7 @@ public class DisableActions extends BaseController {
     }
     PredicateSpecification<ActionData> spec = (root, builder) -> {
       final ArrayList<Predicate> conditions = new ArrayList<>();
+      conditions.add(builder.equal(root.get("recipientId"), ownerId));
       if (command.game() != null) {
         conditions.add(builder.equal(root.get("game"), command.game()));
       }
