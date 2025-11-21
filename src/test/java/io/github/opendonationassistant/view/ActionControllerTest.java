@@ -23,7 +23,8 @@ public class ActionControllerTest {
 
   @Test
   public void testGettingActionList(@Given Action first, @Given Action second) {
-    when(repository.list("recipient")).thenReturn(List.of(first, second));
+    when(repository.findAll(any())).thenReturn(List.of(first, second));
+    // TODO test data spec
     final HttpResponse<List<ActionDto>> response = controller.getActions(
       "recipient",
       null,

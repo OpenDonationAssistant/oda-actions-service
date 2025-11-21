@@ -13,30 +13,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @ExtendWith(InstancioExtension.class)
 public class AddActionTest {
 
   ActionRepository repository = mock(ActionRepository.class);
+
+  RabbitMQContainer rabbit = new RabbitMQContainer(
+    DockerImageName.parse("rabbitmq:3.7.25-management-alpine")
+  );
+
   AddAction controller = new AddAction(repository);
 
   Authentication auth = mock(Authentication.class);
 
+  @BeforeEach
+  public void setup() {
+    rabbit.start();
+  }
+
   @Test
-  public void testAddingAction(@Given NewAction newAction) throws InterruptedException, ExecutionException {
+  public void testAddingAction(@Given NewAction newAction)
+    throws InterruptedException, ExecutionException {
     var createdAction = mock(Action.class);
-    when(createdAction.save()).thenReturn(CompletableFuture.completedFuture(createdAction));
+    when(createdAction.save()).thenReturn(
+      CompletableFuture.completedFuture(createdAction)
+    );
     when(createdAction.data()).thenReturn(
       new ActionData(
         "id",
         "recipient",
         newAction.category(),
-        "providerName",
+        "DonationListener",
         newAction.name(),
         newAction.price(),
         newAction.game(),
@@ -50,7 +65,7 @@ public class AddActionTest {
 
     when(
       repository.create(any(), any(), any(), any(), any(), any(), any())
-    ).thenReturn(createdAction);
+    ).thenReturn(CompletableFuture.completedFuture(createdAction));
 
     var command = new AddActionsCommand(List.of(newAction));
     var response = controller.addAction(command, auth).get();
@@ -58,7 +73,7 @@ public class AddActionTest {
     verify(repository).create(
       "recipient",
       newAction.category(),
-      "providerName",
+      "DonationListener",
       newAction.name(),
       newAction.price(),
       newAction.game(),

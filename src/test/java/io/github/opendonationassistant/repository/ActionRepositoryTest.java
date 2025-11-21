@@ -4,36 +4,53 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.instancio.junit.InstancioExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @MicronautTest(environments = "allinone")
 @ExtendWith(InstancioExtension.class)
 public class ActionRepositoryTest {
+  private ODALogger log = new ODALogger(this);
 
   @Inject
   ActionRepository repository;
 
+  RabbitMQContainer rabbit = new RabbitMQContainer(
+    DockerImageName.parse("rabbitmq:3.7.25-management-alpine")
+  );
+
+  @BeforeEach
+  public void setup() {
+    rabbit.setPortBindings(List.of("5672:5672"));
+    rabbit.start();
+  }
+
   @Test
-  public void testAddingAction() {
-    var action = repository.create(
-      "recipient",
-      "category",
-      "provider",
-      "name",
-      new Amount(10, 0, "EUR"),
-      "game",
-      Map.of("key", "value")
-    );
-    action.save();
+  public void testAddingAction()
+    throws InterruptedException, ExecutionException {
+    log.info("testAddingAction create", Map.of());
+    var action = repository
+      .create(
+        "recipient",
+        "category",
+        "provider",
+        "name",
+        new Amount(10, 0, "EUR"),
+        "game",
+        Map.of("key", "value")
+      ).join();
+    log.info("testAddingAction check saved", Map.of("action", action));
     var saved = repository.findByIdAndRecipientId(
       action.data().id(),
       "recipient"
@@ -60,7 +77,6 @@ public class ActionRepositoryTest {
         "game",
         Map.of("key", "value")
       )
-      .save()
       .get()
       .data()
       .id();
@@ -74,7 +90,6 @@ public class ActionRepositoryTest {
         "anotherGame",
         Map.of("anotherKey", "anotherValue")
       )
-      .save()
       .get()
       .data()
       .id();
@@ -114,7 +129,6 @@ public class ActionRepositoryTest {
         "game",
         Map.of("key", "value")
       )
-      .save()
       .get();
     final List<Action> actions = repository.findAll((root, builder) -> {
       return builder.and(

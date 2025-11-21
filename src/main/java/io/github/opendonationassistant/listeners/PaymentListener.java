@@ -1,24 +1,26 @@
 package io.github.opendonationassistant.listeners;
 
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
-import io.github.opendonationassistant.events.actions.ActionSender;
+import io.github.opendonationassistant.events.actions.ActionRequestSender;
+import io.github.opendonationassistant.events.actions.ActionRequestSender.ActionRequest;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
+import java.util.List;
 
 @RabbitListener
 public class PaymentListener {
 
-  private final ActionSender actionSender;
+  private final ActionRequestSender requestSender;
   private final ActionRepository repository;
 
   @Inject
   public PaymentListener(
-    ActionSender actionSender,
+    ActionRequestSender requestSender,
     ActionRepository repository
   ) {
-    this.actionSender = actionSender;
+    this.requestSender = requestSender;
     this.repository = repository;
   }
 
@@ -27,27 +29,25 @@ public class PaymentListener {
     if (payment.actions().isEmpty()) {
       return;
     }
-    actionSender.send(
-      payment.recipientId(),
-      payment
-        .actions()
-        .stream()
-        .map(action ->
-          repository
-            .findByIdAndRecipientId(action.actionId(), payment.recipientId())
-            .map(found ->
-              new ActionSender.ActionRequest(
-                action.id(),
-                action.actionId(),
-                action.amount(),
-                "",
-                payment.nickname(),
-                found.data().payload()
-              )
+    final List<ActionRequest> actions = payment
+      .actions()
+      .stream()
+      .map(action ->
+        repository
+          .findByIdAndRecipientId(action.actionId(), payment.recipientId())
+          .map(found ->
+            new ActionRequestSender.ActionRequest(
+              action.id(),
+              action.actionId(),
+              action.amount(),
+              "DonationListener",
+              payment.nickname(),
+              found.data().payload()
             )
-            .orElseThrow(() -> new RuntimeException("Action not found"))
-        )
-        .toList()
-    );
+          )
+          .orElseThrow(() -> new RuntimeException("Action not found"))
+      )
+      .toList();
+    requestSender.send(payment.recipientId(), actions);
   }
 }

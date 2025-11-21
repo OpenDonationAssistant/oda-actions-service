@@ -45,19 +45,16 @@ public class AddAction extends BaseController {
       .actions()
       .stream()
       .map(action ->
-        repository.create(
-          recipientId.get(),
-          action.category(),
-          "DonationListener",
-          action.name(),
-          action.price(),
-          action.game(),
-          action.payload()
-        )
-      )
-      .map(action ->
-        action
-          .save()
+        repository
+          .create(
+            recipientId.get(),
+            action.category(),
+            "DonationListener",
+            action.name(),
+            action.price(),
+            action.game(),
+            action.payload()
+          )
           .thenApply(it -> {
             var list = new ArrayList<AddActionResult>();
             list.add(new AddActionResult(true, "", ActionDto.from(it.data())));

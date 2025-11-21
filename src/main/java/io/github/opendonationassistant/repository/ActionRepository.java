@@ -3,6 +3,7 @@ package io.github.opendonationassistant.repository;
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.events.actions.ActionSender;
 import io.github.opendonationassistant.events.config.ConfigCommandSender;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import jakarta.inject.Inject;
@@ -10,21 +11,25 @@ import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Singleton
 public class ActionRepository {
 
   private final ActionDataRepository repository;
   private final ConfigCommandSender configCommandSender;
+  private final ActionSender actionSender;
   private final ODALogger log = new ODALogger(this);
 
   @Inject
   public ActionRepository(
     ActionDataRepository repository,
-    ConfigCommandSender configCommandSender
+    ConfigCommandSender configCommandSender,
+    ActionSender actionSender
   ) {
     this.repository = repository;
     this.configCommandSender = configCommandSender;
+    this.actionSender = actionSender;
   }
 
   public Optional<Action> findByIdAndRecipientId(
@@ -43,7 +48,7 @@ public class ActionRepository {
   }
 
   // TODO should save to db
-  public Action create(
+  public CompletableFuture<Action> create(
     String recipientId,
     String category,
     String provider,
@@ -65,7 +70,27 @@ public class ActionRepository {
       payload
     );
     log.info("Saving action", Map.of("action", data));
-    return convert(data);
+    return convert(data)
+      .save()
+      .thenApply(it -> {
+        actionSender.publishCreatedActions(
+          List.of(
+            new ActionSender.Action(
+              it.data().id(),
+              // it.data().recipientId(),
+              null,
+              it.data().category(),
+              it.data().provider(),
+              it.data().name(),
+              it.data().amount(),
+              it.data().game(),
+              it.data().enabled(),
+              it.data().payload()
+            )
+          )
+        );
+        return it;
+      });
   }
 
   public List<Action> findAll(PredicateSpecification<ActionData> spec) {
