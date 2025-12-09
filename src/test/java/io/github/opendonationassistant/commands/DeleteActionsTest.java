@@ -58,6 +58,7 @@ public class DeleteActionsTest {
       auth
     );
     assertEquals(200, result.code());
+    assertNotNull(result.body());
     assertTrue(result.body().success());
     assertEquals(List.of(first.id(), second.id()), result.body().ids());
     verify(dataRepository).delete(first);

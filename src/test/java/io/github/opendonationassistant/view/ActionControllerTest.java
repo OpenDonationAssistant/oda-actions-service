@@ -33,6 +33,7 @@ public class ActionControllerTest {
       null
     );
     assertTrue(response.code() == 200);
+    assertNotNull(response.body());
     assertEquals(2, response.body().size());
     var createdFirst = response.body().getFirst();
     var createdSecond = response.body().getLast();

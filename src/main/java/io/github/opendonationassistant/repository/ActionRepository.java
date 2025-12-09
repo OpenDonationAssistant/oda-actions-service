@@ -77,8 +77,7 @@ public class ActionRepository {
           List.of(
             new ActionSender.Action(
               it.data().id(),
-              // it.data().recipientId(),
-              null,
+              it.data().recipientId(),
               it.data().category(),
               it.data().provider(),
               it.data().name(),

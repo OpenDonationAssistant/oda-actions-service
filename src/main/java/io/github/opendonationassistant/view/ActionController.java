@@ -19,6 +19,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class ActionController extends BaseController {
@@ -88,8 +89,8 @@ public class ActionController extends BaseController {
         data.id(),
         data.name(),
         data.amount(),
-        data.category(),
-        data.game(),
+        Optional.ofNullable(data.category()).orElse(""),
+        Optional.ofNullable(data.game()).orElse(""),
         data.enabled(),
         data.payload()
       );

@@ -18,6 +18,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -45,7 +46,13 @@ public class DisableActions extends BaseController {
             f1.thenCombine(f2, (a, b) -> null)
           )
       )
-      .map(unused -> new DisableActionsResult(true, "", command.ids())) // TODO collect ids
+      .map(_ ->
+        new DisableActionsResult(
+          true,
+          "",
+          Optional.ofNullable(command.ids()).orElse(List.of())
+        )
+      ) // TODO collect ids
       .map(HttpResponse::ok)
       .orElseGet(() -> HttpResponse.unauthorized());
   }

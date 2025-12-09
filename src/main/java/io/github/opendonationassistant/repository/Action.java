@@ -2,6 +2,8 @@ package io.github.opendonationassistant.repository;
 
 import io.github.opendonationassistant.events.config.ConfigCommand;
 import io.github.opendonationassistant.events.config.ConfigCommandSender;
+
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class Action {
@@ -59,8 +61,8 @@ public class Action {
         data.id(),
         data.name(),
         data.amount(),
-        data.category(),
-        data.game(),
+        Optional.ofNullable(data.category()).orElse(""),
+        Optional.ofNullable(data.game()).orElse(""),
         data.payload()
       )
     );

@@ -14,6 +14,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -34,8 +35,8 @@ public class DeleteActions extends BaseController {
   ) {
     return getOwnerId(auth)
       .map(ownerId ->
-        command
-          .ids()
+        Optional.ofNullable(command.ids())
+          .orElse(List.of())
           .stream()
           .map(id -> {
             return repository
@@ -47,7 +48,13 @@ public class DeleteActions extends BaseController {
             f1.thenCombine(f2, (a, b) -> null)
           )
       )
-      .map(unused -> new DeleteActionsResult(true, "", command.ids())) // TODO collect ids
+      .map(unused ->
+        new DeleteActionsResult(
+          true,
+          "",
+          Optional.ofNullable(command.ids()).orElse(List.of())
+        )
+      )
       .map(HttpResponse::ok)
       .orElseGet(() -> HttpResponse.unauthorized());
   }
