@@ -18,26 +18,26 @@ import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.rabbitmq.RabbitMQContainer;
-import org.testcontainers.utility.DockerImageName;
+// import org.testcontainers.rabbitmq.RabbitMQContainer;
+// import org.testcontainers.utility.DockerImageName;
 
 @ExtendWith(InstancioExtension.class)
 public class AddActionTest {
 
   ActionRepository repository = mock(ActionRepository.class);
 
-  RabbitMQContainer rabbit = new RabbitMQContainer(
-    DockerImageName.parse("rabbitmq:3.7.25-management-alpine")
-  );
+  // RabbitMQContainer rabbit = new RabbitMQContainer(
+  //   DockerImageName.parse("rabbitmq:3.7.25-management-alpine")
+  // );
 
   AddAction controller = new AddAction(repository);
 
   Authentication auth = mock(Authentication.class);
 
-  @BeforeEach
-  public void setup() {
-    rabbit.start();
-  }
+  // @BeforeEach
+  // public void setup() {
+  //   rabbit.start();
+  // }
 
   @Test
   public void testAddingAction(@Given NewAction newAction)

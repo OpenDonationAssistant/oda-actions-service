@@ -1,8 +1,8 @@
 package io.github.opendonationassistant.listeners;
 
-import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.actions.ActionRequestSender;
 import io.github.opendonationassistant.events.actions.ActionRequestSender.ActionRequest;
+import io.github.opendonationassistant.events.payments.PaymentEvent;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
@@ -25,7 +25,7 @@ public class PaymentListener {
   }
 
   @Queue(io.github.opendonationassistant.rabbit.Queue.Payments.ACTIONS)
-  void listen(CompletedPaymentNotification payment) {
+  void listen(PaymentEvent payment) {
     if (payment.actions().isEmpty()) {
       return;
     }
