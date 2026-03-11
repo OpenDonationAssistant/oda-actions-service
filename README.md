@@ -1,3 +1,6 @@
+# ODA Actions Service
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/OpenDonationAssistant/oda-actions-service)
+
 ## Micronaut 4.9.3 Documentation
 
 - [User Guide](https://docs.micronaut.io/4.9.3/guide/index.html)
