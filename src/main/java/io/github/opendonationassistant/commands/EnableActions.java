@@ -1,19 +1,13 @@
 package io.github.opendonationassistant.commands;
 
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionData;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.security.rules.SecurityRule;
-import io.micronaut.serde.annotation.Serdeable;
-import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -21,9 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@Controller
-public class EnableActions extends BaseController {
+public class EnableActions extends BaseController implements EnableActionsApi {
 
+  private final ODALogger log = new ODALogger(this);
   private final ActionRepository repository;
 
   @Inject
@@ -31,30 +25,30 @@ public class EnableActions extends BaseController {
     this.repository = repository;
   }
 
-  @Post("/actions/commands/enableActions")
-  @Secured(SecurityRule.IS_AUTHENTICATED)
-  public HttpResponse<EnableActionsResult> enableActions(
-    @Body EnableActionsCommand command,
+  public CompletableFuture<HttpResponse<EnableActionsResult>> execute(
+    EnableActionsCommand command,
     Authentication auth
   ) {
-    return getOwnerId(auth)
-      .map(ownerId ->
-        getActions(ownerId, command)
-          .stream()
-          .map(Action::enable)
-          .reduce(CompletableFuture.completedFuture(null), (f1, f2) ->
-            f1.thenCombine(f2, (a, b) -> null)
-          )
+    Optional<String> ownerIdOpt = getOwnerId(auth);
+    if (ownerIdOpt.isEmpty()) {
+      return CompletableFuture.completedFuture(HttpResponse.unauthorized());
+    }
+    String ownerId = ownerIdOpt.get();
+    Optional<List<String>> idsOpt = Optional.ofNullable(command.ids());
+    return getActions(ownerId, command)
+      .stream()
+      .map(Action::enable)
+      .reduce(CompletableFuture.completedFuture(null), (f1, f2) ->
+        f1.thenCombine(f2, (a, b) -> null)
       )
-      .map(_ ->
-        new EnableActionsResult(
+      .thenApply(unused -> {
+        EnableActionsResult result = new EnableActionsResult(
           true,
           "",
-          Optional.ofNullable(command.ids()).orElse(List.of())
-        )
-      ) // TODO collect ids
-      .map(HttpResponse::ok)
-      .orElseGet(() -> HttpResponse.unauthorized());
+          idsOpt.orElse(List.of())
+        );
+        return HttpResponse.ok(result);
+      });
   }
 
   private List<Action> getActions(
@@ -92,19 +86,4 @@ public class EnableActions extends BaseController {
     actions.addAll(repository.findAll(spec));
     return actions;
   }
-
-  @Serdeable
-  public static record EnableActionsResult(
-    Boolean success,
-    String message,
-    List<String> ids
-  ) {}
-
-  @Serdeable
-  public static record EnableActionsCommand(
-    @Nullable String category,
-    @Nullable String provider,
-    @Nullable String game,
-    @Nullable List<String> ids
-  ) {}
 }

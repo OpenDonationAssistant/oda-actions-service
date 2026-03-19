@@ -1,7 +1,7 @@
 package io.github.opendonationassistant.commands;
 
 import io.github.opendonationassistant.commons.Amount;
-import io.github.opendonationassistant.view.ActionController.ActionDto;
+import io.github.opendonationassistant.view.ActionControllerApi.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -11,6 +11,7 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +23,10 @@ import java.util.concurrent.CompletableFuture;
 public interface AddActionApi {
   @Post("/actions/commands/add-actions")
   @Secured(SecurityRule.IS_AUTHENTICATED)
+  @Operation(
+    summary = "Add actions",
+    description = "Add new actions to the system"
+  )
   @ApiResponse(
     responseCode = "200",
     description = "Actions successfully created",

@@ -1,20 +1,18 @@
 package io.github.opendonationassistant.commands;
 
 import com.fasterxml.uuid.Generators;
-import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
+import io.github.opendonationassistant.repository.ActionRequestData;
 import io.github.opendonationassistant.repository.ActionRequestRepository;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Controller
-public class LinkActions extends BaseController {
+public class LinkActions extends BaseController implements LinkActionsApi {
 
+  private final ODALogger log = new ODALogger(this);
   private final ActionRequestRepository repository;
 
   @Inject
@@ -22,12 +20,12 @@ public class LinkActions extends BaseController {
     this.repository = repository;
   }
 
-  public CompletableFuture<HttpResponse<Void>> linkActions(
-    @Body LinkActionsRequest request
+  public CompletableFuture<HttpResponse<LinkActionsResponse>> execute(
+    LinkActionsRequest request
   ) {
     return CompletableFuture.runAsync(() ->
       repository.create(
-        new io.github.opendonationassistant.repository.ActionRequestData(
+        new ActionRequestData(
           Generators.timeBasedEpochGenerator().generate().toString(),
           "payment",
           request.originId(),
@@ -35,7 +33,7 @@ public class LinkActions extends BaseController {
             .actions()
             .stream()
             .map(action ->
-              new io.github.opendonationassistant.repository.ActionRequestData.ActionLink(
+              new ActionRequestData.ActionLink(
                 Generators.timeBasedEpochGenerator().generate().toString(),
                 action.actionId(),
                 action.amount()
@@ -44,19 +42,6 @@ public class LinkActions extends BaseController {
             .toList()
         )
       )
-    ).thenApply(_ -> HttpResponse.ok());
+    ).thenApply(unused -> HttpResponse.ok(new LinkActionsResponse(null)));
   }
-
-  @Serdeable
-  public static record LinkActionsRequest(
-    String source,
-    String originId,
-    List<LinkActions.ActionRequest> actions
-  ) {}
-
-  @Serdeable
-  public static record ActionRequest(String actionId, Integer amount) {}
-
-  @Serdeable
-  public static record LinkActionsResponse(Amount amount) {}
 }

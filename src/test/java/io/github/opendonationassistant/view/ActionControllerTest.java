@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.github.opendonationassistant.view.ActionController.ActionDto;
+import io.github.opendonationassistant.view.ActionControllerApi.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.Authentication;
 import java.util.List;

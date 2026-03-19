@@ -3,7 +3,7 @@ package io.github.opendonationassistant.commands;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.github.opendonationassistant.view.ActionController.ActionDto;
+import io.github.opendonationassistant.view.ActionControllerApi.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
