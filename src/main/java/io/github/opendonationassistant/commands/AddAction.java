@@ -1,9 +1,10 @@
 package io.github.opendonationassistant.commands;
 
+import io.github.opendonationassistant.api.ActionControllerApi.ActionDto;
+import io.github.opendonationassistant.api.AddActionApi;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.github.opendonationassistant.view.ActionControllerApi.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
@@ -22,10 +23,9 @@ public class AddAction extends BaseController implements AddActionApi {
     this.repository = repository;
   }
 
-  public CompletableFuture<HttpResponse<List<AddActionResult>>> execute(
-    AddActionsCommand command,
-    Authentication auth
-  ) {
+  public CompletableFuture<
+    HttpResponse<List<AddActionApi.AddActionResult>>
+  > execute(AddActionApi.AddActionsCommand command, Authentication auth) {
     log.debug("Received AddActionsCommand", Map.of("command", command));
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {
@@ -46,13 +46,21 @@ public class AddAction extends BaseController implements AddActionApi {
             action.payload()
           )
           .thenApply(it -> {
-            var list = new ArrayList<AddActionResult>();
-            list.add(new AddActionResult(true, "", ActionDto.from(it.data())));
+            var list = new ArrayList<AddActionApi.AddActionResult>();
+            list.add(
+              new AddActionApi.AddActionResult(
+                true,
+                "",
+                ActionDto.from(it.data())
+              )
+            );
             return list;
           })
       )
       .reduce(
-        CompletableFuture.completedFuture(new ArrayList<AddActionResult>()),
+        CompletableFuture.completedFuture(
+          new ArrayList<AddActionApi.AddActionResult>()
+        ),
         (f1, f2) -> {
           return f1.thenCombine(f2, (l1, l2) -> {
             l1.addAll(l2);

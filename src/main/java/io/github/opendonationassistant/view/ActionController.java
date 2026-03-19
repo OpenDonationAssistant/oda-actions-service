@@ -1,5 +1,7 @@
 package io.github.opendonationassistant.view;
 
+import io.github.opendonationassistant.api.ActionControllerApi;
+import io.github.opendonationassistant.api.ActionControllerApi.ActionDto;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionData;

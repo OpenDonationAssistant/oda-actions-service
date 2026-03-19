@@ -1,5 +1,6 @@
 package io.github.opendonationassistant.commands;
 
+import io.github.opendonationassistant.api.DisableActionsApi;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
@@ -15,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class DisableActions extends BaseController implements DisableActionsApi {
+public class DisableActions
+  extends BaseController
+  implements DisableActionsApi {
 
   private final ODALogger log = new ODALogger(this);
   private final ActionRepository repository;
@@ -41,11 +44,11 @@ public class DisableActions extends BaseController implements DisableActionsApi 
       .reduce(CompletableFuture.completedFuture(null), (f1, f2) ->
         f1.thenCombine(f2, (a, b) -> null)
       )
-      .thenApply(_ -> HttpResponse.ok(new DisableActionsResult(
-        true,
-        "",
-        idsOpt.orElse(List.of())
-      )));
+      .thenApply(_ ->
+        HttpResponse.ok(
+          new DisableActionsResult(true, "", idsOpt.orElse(List.of()))
+        )
+      );
   }
 
   private List<Action> getActions(

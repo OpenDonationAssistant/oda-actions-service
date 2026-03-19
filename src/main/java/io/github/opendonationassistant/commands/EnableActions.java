@@ -1,5 +1,6 @@
 package io.github.opendonationassistant.commands;
 
+import io.github.opendonationassistant.api.EnableActionsApi;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;

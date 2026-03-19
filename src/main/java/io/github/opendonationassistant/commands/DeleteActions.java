@@ -1,5 +1,6 @@
 package io.github.opendonationassistant.commands;
 
+import io.github.opendonationassistant.api.DeleteActionsApi;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
@@ -43,10 +44,10 @@ public class DeleteActions extends BaseController implements DeleteActionsApi {
       .reduce(CompletableFuture.completedFuture(null), (f1, f2) ->
         f1.thenCombine(f2, (a, b) -> null)
       )
-      .thenApply(_ -> HttpResponse.ok(new DeleteActionsResult(
-        true,
-        "",
-        idsOpt.orElse(List.of())
-      )));
+      .thenApply(_ ->
+        HttpResponse.ok(
+          new DeleteActionsResult(true, "", idsOpt.orElse(List.of()))
+        )
+      );
   }
 }
