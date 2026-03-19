@@ -13,27 +13,55 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@Controller
 public class AddAction extends BaseController {
 
-  private final ActionRepository repository;
   private final ODALogger log = new ODALogger(this);
+  private final ActionRepository repository;
 
   @Inject
   public AddAction(ActionRepository repository) {
     this.repository = repository;
   }
 
-  @Post("/actions/commands/addActions")
+  @Post("/actions/commands/add-actions")
   @Secured(SecurityRule.IS_AUTHENTICATED)
+  @ApiResponse(
+    responseCode = "200",
+    description = "Actions successfully created",
+    content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(implementation = AddActionResult.class)
+    )
+  )
   public CompletableFuture<HttpResponse<List<AddActionResult>>> addAction(
     @Body AddActionsCommand command,
+    Authentication auth
+  ) {
+    return execute(command, auth);
+  }
+
+  @Post("/actions/commands/addActions")
+  @Hidden
+  @Secured(SecurityRule.IS_AUTHENTICATED)
+  public CompletableFuture<HttpResponse<List<AddActionResult>>> oldAddAction(
+    @Body AddActionsCommand command,
+    Authentication auth
+  ) {
+    return execute(command, auth);
+  }
+
+  private CompletableFuture<HttpResponse<List<AddActionResult>>> execute(
+    AddActionsCommand command,
     Authentication auth
   ) {
     log.debug("Received AddActionsCommand", Map.of("command", command));

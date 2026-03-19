@@ -1,34 +1,35 @@
-package io.github.opendonationassistant.listeners;
+package io.github.opendonationassistant.listeners.handlers;
 
+import io.github.opendonationassistant.events.AbstractMessageHandler;
 import io.github.opendonationassistant.events.actions.ActionRequestSender;
 import io.github.opendonationassistant.events.actions.ActionRequestSender.ActionRequest;
 import io.github.opendonationassistant.events.payments.PaymentEvent;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.micronaut.rabbitmq.annotation.Queue;
-import io.micronaut.rabbitmq.annotation.RabbitListener;
+import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import java.io.IOException;
 import java.util.List;
 
-@RabbitListener
-public class PaymentListener {
+@Singleton
+public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
 
-  private final ActionRequestSender requestSender;
   private final ActionRepository repository;
+  private final ActionRequestSender requestSender;
 
   @Inject
-  public PaymentListener(
-    ActionRequestSender requestSender,
-    ActionRepository repository
+  public PaymentEventHandler(
+    ObjectMapper mapper,
+    ActionRepository actionRepository,
+    ActionRequestSender requestSender
   ) {
+    super(mapper);
+    this.repository = actionRepository;
     this.requestSender = requestSender;
-    this.repository = repository;
   }
 
-  @Queue(io.github.opendonationassistant.rabbit.Queue.Payments.ACTIONS)
-  void listen(PaymentEvent payment) {
-    if (payment.actions().isEmpty()) {
-      return;
-    }
+  @Override
+  public void handle(PaymentEvent payment) throws IOException {
     final List<ActionRequest> actions = payment
       .actions()
       .stream()

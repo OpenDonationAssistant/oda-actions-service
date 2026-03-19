@@ -1,73 +1,60 @@
 # ODA Actions Service
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/OpenDonationAssistant/oda-actions-service)
 
-## Micronaut 4.9.3 Documentation
+## Running with Docker
 
-- [User Guide](https://docs.micronaut.io/4.9.3/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.9.3/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.9.3/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
+### Using Docker Run
 
-- [Micronaut Maven Plugin documentation](https://micronaut-projects.github.io/micronaut-maven-plugin/latest/)
-## Feature openapi documentation
+```bash
+docker run -d \
+  --name oda-actions-service \
+  -p 8080:8080 \
+  -e JDBC_URL=jdbc:postgresql://postgres-host:5432/actions \
+  -e JDBC_USER=postgres \
+  -e JDBC_PASSWORD=your-password \
+  ghcr.io/opendonationassistant/actions-service:latest
+```
 
-- [Micronaut OpenAPI Support documentation](https://micronaut-projects.github.io/micronaut-openapi/latest/guide/index.html)
+### Using Docker Compose
 
-- [https://www.openapis.org](https://www.openapis.org)
+```yaml
+services:
+  oda-actions-service:
+    image: ghcr.io/opendonationassistant/actions-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - JDBC_URL=jdbc:postgresql://postgres:5432/actions
+      - JDBC_USER=postgres
+      - JDBC_PASSWORD=postgres
+    depends_on:
+      - postgres
 
+  postgres:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=actions
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-## Feature test-resources documentation
+volumes:
+  postgres_data:
+```
 
-- [Micronaut Test Resources documentation](https://micronaut-projects.github.io/micronaut-test-resources/latest/guide/)
+### Environment Variables
 
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `JDBC_URL` | PostgreSQL JDBC connection URL | `jdbc:postgresql://localhost/postgres?currentSchema=actions` |
+| `JDBC_USER` | Database username | `postgres` |
+| `JDBC_PASSWORD` | Database password | `postgres` |
 
-## Feature maven-enforcer-plugin documentation
+### Building Locally
 
-- [https://maven.apache.org/enforcer/maven-enforcer-plugin/](https://maven.apache.org/enforcer/maven-enforcer-plugin/)
-
-
-## Feature mockito documentation
-
-- [https://site.mockito.org](https://site.mockito.org)
-
-
-## Feature flyway documentation
-
-- [Micronaut Flyway Database Migration documentation](https://micronaut-projects.github.io/micronaut-flyway/latest/guide/index.html)
-
-- [https://flywaydb.org/](https://flywaydb.org/)
-
-
-## Feature cache-caffeine documentation
-
-- [Micronaut Caffeine Cache documentation](https://micronaut-projects.github.io/micronaut-cache/latest/guide/index.html)
-
-- [https://github.com/ben-manes/caffeine](https://github.com/ben-manes/caffeine)
-
-
-## Feature jdbc-hikari documentation
-
-- [Micronaut Hikari JDBC Connection Pool documentation](https://micronaut-projects.github.io/micronaut-sql/latest/guide/index.html#jdbc)
-
-
-## Feature problem-json documentation
-
-- [Micronaut Problem JSON documentation](https://micronaut-projects.github.io/micronaut-problem-json/latest/guide/index.html)
-
-
-## Feature security-jwt documentation
-
-- [Micronaut Security JWT documentation](https://micronaut-projects.github.io/micronaut-security/latest/guide/index.html)
-
-
-## Feature data-jdbc documentation
-
-- [Micronaut Data JDBC documentation](https://micronaut-projects.github.io/micronaut-data/latest/guide/index.html#jdbc)
-
-
-## Feature micronaut-aot documentation
-
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
-
+```bash
+mvn clean package
+docker build -t oda-actions-service .
+```
 
