@@ -6,6 +6,7 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+@Controller
 public class AddAction extends BaseController implements AddActionApi {
 
   private final ODALogger log = new ODALogger(this);

@@ -6,12 +6,14 @@ import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@Controller
 public class DeleteActions extends BaseController implements DeleteActionsApi {
 
   private final ODALogger log = new ODALogger(this);

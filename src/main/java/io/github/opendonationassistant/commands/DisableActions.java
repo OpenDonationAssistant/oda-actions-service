@@ -8,6 +8,7 @@ import io.github.opendonationassistant.repository.ActionData;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@Controller
 public class DisableActions
   extends BaseController
   implements DisableActionsApi {
