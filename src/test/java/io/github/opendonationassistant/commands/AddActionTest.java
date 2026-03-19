@@ -3,8 +3,7 @@ package io.github.opendonationassistant.commands;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import io.github.opendonationassistant.commands.AddAction.AddActionsCommand;
-import io.github.opendonationassistant.commands.AddAction.NewAction;
+import io.github.opendonationassistant.commands.AddActionApi.NewAction;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionData;
 import io.github.opendonationassistant.repository.ActionRepository;
@@ -36,7 +35,7 @@ public class AddActionTest {
     when(createdAction.data()).thenReturn(
       new ActionData(
         "id",
-        "recipient",
+        "testuser",
         newAction.category(),
         "DonationListener",
         newAction.name(),
@@ -50,11 +49,11 @@ public class AddActionTest {
       repository.create(any(), any(), any(), any(), any(), any(), any())
     ).thenReturn(CompletableFuture.completedFuture(createdAction));
 
-    var command = new AddActionsCommand(List.of(newAction));
-    var response = controller.addAction(command, auth).get();
+    var command = new AddActionApi.AddActionsCommand(List.of(newAction));
+    var response = controller.execute(command, auth).get();
 
     verify(repository).create(
-      "recipient",
+      "testuser",
       newAction.category(),
       "DonationListener",
       newAction.name(),
