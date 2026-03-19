@@ -1,18 +1,16 @@
 package io.github.opendonationassistant.commands;
 
 import com.fasterxml.uuid.Generators;
-import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.repository.ActionRequestData;
 import io.github.opendonationassistant.repository.ActionRequestRepository;
 import io.micronaut.http.HttpResponse;
 import jakarta.inject.Inject;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class LinkActions extends BaseController implements LinkActionsApi {
 
-  private final ODALogger log = new ODALogger(this);
   private final ActionRequestRepository repository;
 
   @Inject
@@ -42,6 +40,8 @@ public class LinkActions extends BaseController implements LinkActionsApi {
             .toList()
         )
       )
-    ).thenApply(unused -> HttpResponse.ok(new LinkActionsResponse(null)));
+    ).thenApply(unused ->
+      HttpResponse.ok(new LinkActionsResponse(new Amount(0, 0, "RUB")))
+    );
   }
 }

@@ -54,5 +54,5 @@ public interface LinkActionsApi {
   record ActionRequest(String actionId, Integer amount) {}
 
   @Serdeable
-  record LinkActionsResponse(@Nullable Amount amount) {}
+  record LinkActionsResponse(Amount amount) {}
 }
