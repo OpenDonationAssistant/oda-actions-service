@@ -17,7 +17,7 @@ public class EventsListener {
     this.processor = processor;
   }
 
-  @Queue(io.github.opendonationassistant.rabbit.Queue.Action.EVENTS)
+  @Queue("action.events")
   void listen(
     @MessageHeader String type,
     byte[] message,
