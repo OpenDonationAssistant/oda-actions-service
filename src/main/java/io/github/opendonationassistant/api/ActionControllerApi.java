@@ -37,17 +37,22 @@ public interface ActionControllerApi {
     )
   )
   default HttpResponse<List<ActionDto>> getActions(
-    @Parameter(description = "Owner recipient ID")
-    @Nonnull @QueryValue(value = "recipientId", defaultValue = "")
-    String recipientId,
-    @Parameter(description = "Filter by game")
-    @QueryValue(value = "game") @Nullable String game,
-    @Parameter(description = "Filter by enabled status")
-    @QueryValue(value = "enabled") @Nullable Boolean enabled,
-    @Parameter(description = "Filter by category")
-    @QueryValue(value = "category") @Nullable String category,
-    @Parameter(description = "Filter by provider")
-    @QueryValue(value = "provider") @Nullable String provider
+    @Parameter(description = "Owner recipient ID") @Nonnull @QueryValue(
+      value = "recipientId",
+      defaultValue = ""
+    ) String recipientId,
+    @Parameter(description = "Filter by game") @QueryValue(
+      value = "game"
+    ) @Nullable String game,
+    @Parameter(description = "Filter by enabled status") @QueryValue(
+      value = "enabled"
+    ) @Nullable Boolean enabled,
+    @Parameter(description = "Filter by category") @QueryValue(
+      value = "category"
+    ) @Nullable String category,
+    @Parameter(description = "Filter by provider") @QueryValue(
+      value = "provider"
+    ) @Nullable String provider
   ) {
     return execute(recipientId, game, enabled, category, provider);
   }

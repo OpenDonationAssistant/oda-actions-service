@@ -3,9 +3,9 @@ package io.github.opendonationassistant.view;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import io.github.opendonationassistant.api.ActionControllerApi.ActionDto;
 import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionRepository;
-import io.github.opendonationassistant.api.ActionControllerApi.ActionDto;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.security.authentication.Authentication;
 import java.util.List;
@@ -17,9 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(InstancioExtension.class)
 public class ActionControllerTest {
 
+  // TODO replace with Authentication from Given from test-utils
+  Authentication auth = mock(Authentication.class);
   ActionRepository repository = mock(ActionRepository.class);
   ActionController controller = new ActionController(repository);
-  Authentication auth = mock(Authentication.class);
 
   @Test
   public void testGettingActionList(@Given Action first, @Given Action second) {

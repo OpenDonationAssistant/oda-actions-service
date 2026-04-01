@@ -47,7 +47,10 @@ public class ActionRepository {
       .toList();
   }
 
-  // TODO should save to db
+  public Optional<Action> findByActionId(String actionId) {
+    return repository.findById(actionId).map(this::convert);
+  }
+
   public CompletableFuture<Action> create(
     String recipientId,
     String category,
@@ -70,26 +73,7 @@ public class ActionRepository {
       payload
     );
     log.info("Saving action", Map.of("action", data));
-    return convert(data)
-      .save()
-      .thenApply(it -> {
-        actionSender.publishCreatedActions(
-          List.of(
-            new ActionSender.Action(
-              it.data().id(),
-              it.data().recipientId(),
-              it.data().category(),
-              it.data().provider(),
-              it.data().name(),
-              it.data().amount(),
-              it.data().game(),
-              it.data().enabled(),
-              it.data().payload()
-            )
-          )
-        );
-        return it;
-      });
+    return convert(data).save();
   }
 
   public List<Action> findAll(PredicateSpecification<ActionData> spec) {
