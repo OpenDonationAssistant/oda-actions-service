@@ -5,18 +5,18 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
 public interface LinkActionsApi {
-
   @Post("/actions/commands/link-actions")
   @Operation(
     summary = "Link actions",
@@ -30,6 +30,7 @@ public interface LinkActionsApi {
       schema = @Schema(implementation = LinkActionsResponse.class)
     )
   )
+  @Secured(SecurityRule.IS_ANONYMOUS)
   default CompletableFuture<HttpResponse<LinkActionsResponse>> linkActions(
     @Body LinkActionsRequest request
   ) {
@@ -51,5 +52,5 @@ public interface LinkActionsApi {
   record ActionRequest(String actionId, Integer amount) {}
 
   @Serdeable
-  record LinkActionsResponse(@Nullable Amount amount) {}
+  record LinkActionsResponse(Amount amount) {}
 }
