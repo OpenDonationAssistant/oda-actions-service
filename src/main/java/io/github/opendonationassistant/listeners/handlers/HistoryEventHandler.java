@@ -38,7 +38,8 @@ public class HistoryEventHandler
     if (originId == null) {
       return;
     }
-    final List<ActionRequest> actions = actionRequestRepository.findByOriginId(originId)
+    final List<ActionRequest> actions = actionRequestRepository
+      .findByOriginId(originId)
       .stream()
       .flatMap(request -> request.actions().stream())
       .flatMap(link ->
@@ -56,7 +57,9 @@ public class HistoryEventHandler
       )
       .toList();
     if (actions.size() > 0) {
-      facade.sendEvent(new ActionHistoryEvent("payment", originId, actions));
+      facade
+        .sendEvent(new ActionHistoryEvent("payment", originId, actions))
+        .join();
     }
   }
 }
