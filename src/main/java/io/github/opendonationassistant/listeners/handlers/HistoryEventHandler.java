@@ -6,6 +6,7 @@ import io.github.opendonationassistant.events.actions.ActionHistoryEvent;
 import io.github.opendonationassistant.events.actions.ActionHistoryEvent.ActionRequest;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
 import io.github.opendonationassistant.repository.ActionRepository;
+import io.github.opendonationassistant.repository.ActionRequestRepository;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import java.io.IOException;
@@ -17,14 +18,17 @@ public class HistoryEventHandler
 
   private final ActionRepository repository;
   private final ActionFacade facade;
+  private final ActionRequestRepository actionRequestRepository;
 
   public HistoryEventHandler(
     ObjectMapper mapper,
     ActionRepository repository,
+    ActionRequestRepository actionRequestRepository,
     ActionFacade facade
   ) {
     super(mapper);
     this.repository = repository;
+    this.actionRequestRepository = actionRequestRepository;
     this.facade = facade;
   }
 
@@ -34,18 +38,18 @@ public class HistoryEventHandler
     if (originId == null) {
       return;
     }
-    final List<ActionRequest> actions = message
-      .actions()
+    final List<ActionRequest> actions = actionRequestRepository.findByOriginId(originId)
       .stream()
-      .flatMap(action ->
+      .flatMap(request -> request.actions().stream())
+      .flatMap(link ->
         repository
-          .findByActionId(action.actionId())
+          .findByActionId(link.actionId())
           .map(found ->
             new ActionHistoryEvent.ActionRequest(
-              action.id(),
-              action.actionId(),
-              action.name(),
-              action.amount()
+              link.id(),
+              link.actionId(),
+              found.data().name(),
+              link.amount()
             )
           )
           .stream()
