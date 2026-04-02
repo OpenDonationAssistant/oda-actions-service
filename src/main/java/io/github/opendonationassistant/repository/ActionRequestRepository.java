@@ -10,13 +10,16 @@ public class ActionRequestRepository {
 
   private final ActionRequestDataRepository repository;
   private final ActionRequestSender sender;
+  private final ActionRequestDataRepository dataRepository;
 
   @Inject
   public ActionRequestRepository(
     ActionRequestDataRepository repository,
+    ActionRequestDataRepository dataRepository,
     ActionRequestSender sender
   ) {
     this.repository = repository;
+    this.dataRepository = dataRepository;
     this.sender = sender;
   }
 
@@ -25,6 +28,6 @@ public class ActionRequestRepository {
   }
 
   public ActionRequest create(ActionRequestData data) {
-    return new ActionRequest(data, sender);
+    return new ActionRequest(data, sender, dataRepository);
   }
 }

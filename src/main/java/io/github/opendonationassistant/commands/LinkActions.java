@@ -25,24 +25,26 @@ public class LinkActions extends BaseController implements LinkActionsApi {
     LinkActionsRequest request
   ) {
     return CompletableFuture.runAsync(() ->
-      repository.create(
-        new ActionRequestData(
-          Generators.timeBasedEpochGenerator().generate().toString(),
-          "payment",
-          request.originId(),
-          request
-            .actions()
-            .stream()
-            .map(action ->
-              new ActionRequestData.ActionLink(
-                Generators.timeBasedEpochGenerator().generate().toString(),
-                action.actionId(),
-                action.amount()
+      repository
+        .create(
+          new ActionRequestData(
+            Generators.timeBasedEpochGenerator().generate().toString(),
+            "payment",
+            request.originId(),
+            request
+              .actions()
+              .stream()
+              .map(action ->
+                new ActionRequestData.ActionLink(
+                  Generators.timeBasedEpochGenerator().generate().toString(),
+                  action.actionId(),
+                  action.amount()
+                )
               )
-            )
-            .toList()
+              .toList()
+          )
         )
-      )
+        .save()
     ).thenApply(unused ->
       HttpResponse.ok(new LinkActionsResponse(new Amount(0, 0, "RUB")))
     );

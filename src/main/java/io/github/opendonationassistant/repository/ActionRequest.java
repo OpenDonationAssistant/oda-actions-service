@@ -9,13 +9,20 @@ public class ActionRequest {
 
   private final ActionRequestData data;
   private final ActionRequestSender requestSender;
+  private final ActionRequestDataRepository dataRepository;
 
   @Inject
   public ActionRequest(
     ActionRequestData data,
-    ActionRequestSender requestSender
+    ActionRequestSender requestSender,
+    ActionRequestDataRepository dataRepository
   ) {
     this.data = data;
     this.requestSender = requestSender;
+    this.dataRepository = dataRepository;
+  }
+
+  public void save() {
+    dataRepository.save(data);
   }
 }
