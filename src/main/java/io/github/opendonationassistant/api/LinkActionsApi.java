@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public interface LinkActionsApi {
   @Post("/actions/commands/link-actions")
   @Operation(
+    hidden = true,
     summary = "Link actions",
     description = "Links actions together for coordinated execution"
   )
