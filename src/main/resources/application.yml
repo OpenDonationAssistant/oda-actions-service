@@ -16,6 +16,8 @@ flyway:
   datasources:
     default:
       enabled: true
+      schemas: 'actions'
+      default-schema: 'actions'
 endpoints:
   prometheus:
     sensitive: false
