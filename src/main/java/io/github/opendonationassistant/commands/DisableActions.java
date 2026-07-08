@@ -14,6 +14,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,6 +39,10 @@ public class DisableActions
     if (ownerIdOpt.isEmpty()) {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
+    log.info(
+      "Received DisableActionsCommand",
+      Map.of("command", command, "recipientId", ownerIdOpt.get())
+    );
     String ownerId = ownerIdOpt.get();
     Optional<List<String>> idsOpt = Optional.ofNullable(command.ids());
     return getActions(ownerId, command)

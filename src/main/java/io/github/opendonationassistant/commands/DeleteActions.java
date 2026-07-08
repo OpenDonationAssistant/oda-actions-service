@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -33,6 +34,7 @@ public class DeleteActions extends BaseController implements DeleteActionsApi {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
     String ownerId = ownerIdOpt.get();
+    log.info("Received DeleteActionsCommand", Map.of("command", command, "recipientId", ownerId));
     Optional<List<String>> idsOpt = Optional.ofNullable(command.ids());
     return idsOpt
       .orElse(List.of())

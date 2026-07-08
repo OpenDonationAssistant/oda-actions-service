@@ -14,6 +14,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,6 +38,10 @@ public class EnableActions extends BaseController implements EnableActionsApi {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
     String ownerId = ownerIdOpt.get();
+    log.info(
+      "Received DisableActionsCommand",
+      Map.of("command", command, "recipientId", ownerId)
+    );
     Optional<List<String>> idsOpt = Optional.ofNullable(command.ids());
     return getActions(ownerId, command)
       .stream()

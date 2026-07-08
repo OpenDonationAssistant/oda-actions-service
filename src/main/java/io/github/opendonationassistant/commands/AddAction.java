@@ -28,11 +28,14 @@ public class AddAction extends BaseController implements AddActionApi {
   public CompletableFuture<
     HttpResponse<List<AddActionApi.AddActionResult>>
   > execute(AddActionApi.AddActionsCommand command, Authentication auth) {
-    log.debug("Received AddActionsCommand", Map.of("command", command));
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
+    log.info(
+      "Received AddActionsCommand",
+      Map.of("command", command, "recipientId", recipientId.get())
+    );
     return command
       .actions()
       .stream()
