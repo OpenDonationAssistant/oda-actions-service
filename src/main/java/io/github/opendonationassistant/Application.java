@@ -15,7 +15,13 @@ import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
-@OpenAPIDefinition(info = @Info(title = "oda-actions-service"))
+@OpenAPIDefinition(info = @Info(title = "oda-actions-service",
+    version = "0.1.0",
+    license = @License(
+      name = "AGPL-3.0",
+      url = "https://www.gnu.org/licenses/agpl-3.0.en.html"
+    )
+))
 @Factory
 public class Application {
 
