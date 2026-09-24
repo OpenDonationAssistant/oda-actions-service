@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,7 +35,7 @@ public interface EnableActionsApi {
     )
   )
   default CompletableFuture<HttpResponse<EnableActionsResult>> enableActions(
-    @Body EnableActionsCommand command,
+    @Valid @Body EnableActionsCommand command,
     Authentication auth
   ) {
     return execute(command, auth);
@@ -46,7 +47,7 @@ public interface EnableActionsApi {
   default CompletableFuture<
     HttpResponse<EnableActionsResult>
   > deprecatedEnableActions(
-    @Body EnableActionsCommand command,
+    @Valid @Body EnableActionsCommand command,
     Authentication auth
   ) {
     return execute(command, auth);

@@ -6,6 +6,7 @@ import io.github.opendonationassistant.repository.Action;
 import io.github.opendonationassistant.repository.ActionRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.validation.Validated;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@Validated
 public class ActionController extends BaseController implements ActionControllerApi {
 
   private final ActionRepository repository;

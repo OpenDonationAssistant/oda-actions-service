@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,7 +35,7 @@ public interface DeleteActionsApi {
     )
   )
   default CompletableFuture<HttpResponse<DeleteActionsResult>> deleteActions(
-    @Body DeleteActionsCommand command,
+    @Valid @Body DeleteActionsCommand command,
     Authentication auth
   ) {
     return execute(command, auth);
@@ -46,7 +47,7 @@ public interface DeleteActionsApi {
   default CompletableFuture<
     HttpResponse<DeleteActionsResult>
   > deprecatedDeleteActions(
-    @Body DeleteActionsCommand command,
+    @Valid @Body DeleteActionsCommand command,
     Authentication auth
   ) {
     return execute(command, auth);

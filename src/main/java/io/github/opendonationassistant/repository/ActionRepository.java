@@ -36,7 +36,9 @@ public class ActionRepository {
     String id,
     String recipientId
   ) {
-    return repository.findById(id).map(this::convert);
+    return repository
+      .findByIdAndRecipientId(id, recipientId)
+      .map(this::convert);
   }
 
   public List<Action> list(String recipientId) {

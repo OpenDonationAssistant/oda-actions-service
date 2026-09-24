@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -37,7 +40,7 @@ public interface AddActionApi {
   )
   public default CompletableFuture<
     HttpResponse<List<AddActionResult>>
-  > addAction(@Body AddActionsCommand command, Authentication auth) {
+  > addAction(@Valid @Body AddActionsCommand command, Authentication auth) {
     return execute(command, auth);
   }
 
@@ -46,7 +49,7 @@ public interface AddActionApi {
   @Secured(SecurityRule.IS_AUTHENTICATED)
   public default CompletableFuture<
     HttpResponse<List<AddActionResult>>
-  > deprecatedAddAction(@Body AddActionsCommand command, Authentication auth) {
+  > deprecatedAddAction(@Valid @Body AddActionsCommand command, Authentication auth) {
     return execute(command, auth);
   }
 
@@ -56,7 +59,9 @@ public interface AddActionApi {
   );
 
   @Serdeable
-  public static record AddActionsCommand(List<NewAction> actions) {}
+  public static record AddActionsCommand(
+    @Valid @NotNull List<NewAction> actions
+  ) {}
 
   @Serdeable
   public static record AddActionResult(
@@ -67,18 +72,18 @@ public interface AddActionApi {
 
   @Serdeable
   public static record ActionParameter(
-    String name,
+    @NotBlank String name,
     String displayName,
     String type
   ) {}
 
   @Serdeable
   public static record NewAction(
-    String name,
-    String category,
+    @NotBlank String name,
+    @NotBlank String category,
     String game,
-    Amount price,
-    Map<String, Object> payload,
-    List<ActionParameter> parameters
+    @NotNull Amount price,
+    @NotNull Map<String, Object> payload,
+    @Valid List<ActionParameter> parameters
   ) {}
 }

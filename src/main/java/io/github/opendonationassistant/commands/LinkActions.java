@@ -8,10 +8,12 @@ import io.github.opendonationassistant.repository.ActionRequestData;
 import io.github.opendonationassistant.repository.ActionRequestRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
+@Validated
 public class LinkActions extends BaseController implements LinkActionsApi {
 
   private final ActionRequestRepository repository;

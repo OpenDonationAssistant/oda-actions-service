@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -33,7 +36,7 @@ public interface LinkActionsApi {
   )
   @Secured(SecurityRule.IS_ANONYMOUS)
   default CompletableFuture<HttpResponse<LinkActionsResponse>> linkActions(
-    @Body LinkActionsRequest request
+    @Valid @Body LinkActionsRequest request
   ) {
     return execute(request);
   }
@@ -45,12 +48,12 @@ public interface LinkActionsApi {
   @Serdeable
   record LinkActionsRequest(
     String source,
-    String originId,
-    List<ActionRequest> actions
+    @NotBlank String originId,
+    @Valid @NotNull List<ActionRequest> actions
   ) {}
 
   @Serdeable
-  record ActionRequest(String actionId, Integer amount) {}
+  record ActionRequest(@NotBlank String actionId, @NotNull Integer amount) {}
 
   @Serdeable
   record LinkActionsResponse(Amount amount) {}

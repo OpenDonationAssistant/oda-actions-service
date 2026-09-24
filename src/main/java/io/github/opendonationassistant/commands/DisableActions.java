@@ -10,6 +10,7 @@ import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
+import io.micronaut.validation.Validated;
 import jakarta.inject.Inject;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
+@Validated
 public class DisableActions
   extends BaseController
   implements DisableActionsApi {
