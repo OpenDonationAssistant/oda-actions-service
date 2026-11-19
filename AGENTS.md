@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Micronaut 5.1.0 microservice (Java 25, Maven) for managing donation actions in the OpenDonationAssistant platform. Consumes RabbitMQ events, exposes REST endpoints, persists to PostgreSQL.
+Micronaut 5.2.5 microservice (Java 25, Maven) for managing donation actions in the OpenDonationAssistant platform. Consumes RabbitMQ events, exposes REST endpoints, persists to PostgreSQL.
 
 ## Build & Test
 
