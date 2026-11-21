@@ -5,7 +5,9 @@ on:
     branches: ["master"]
   workflow_dispatch:
 
-permissions: write-all
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   build-and-deploy:
